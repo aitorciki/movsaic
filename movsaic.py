@@ -7,8 +7,9 @@ import shlex
 import subprocess
 
 
-def build_filter(width, height, num_inputs, size):
+def build_filter(width, height, num_inputs):
     prev = 'base'
+    size = math.ceil(math.sqrt(num_inputs))
     c_width = width // size
     c_height = height // size
 
@@ -38,16 +39,11 @@ def build_filter(width, height, num_inputs, size):
 
 def build_ffmpeg(inputs, width, height, output, extra_params=''):
     command = ['ffmpeg']
-    size = math.ceil(math.sqrt(len(inputs)))
 
     for input in inputs:
         command.extend(['-i', input])
 
-    command.extend([
-        '-filter_complex',
-        build_filter(width, height, len(inputs), size)
-    ])
-
+    command.extend(['-filter_complex', build_filter(width, height, len(inputs))])
     command.extend(['-c:v', 'libx264'])
     command.extend(shlex.split(extra_params))
 
