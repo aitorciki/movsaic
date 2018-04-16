@@ -37,14 +37,14 @@ def build_filter(width, height, num_inputs):
     return '; '.join(base + defs + overlays)
 
 
-def build_ffmpeg(inputs, width, height, output, extra_params=''):
+def build_ffmpeg(inputs, width, height, output, codec, extra_params=''):
     command = ['ffmpeg']
 
     for input in inputs:
         command.extend(['-i', input])
 
     command.extend(['-filter_complex', build_filter(width, height, len(inputs))])
-    command.extend(['-c:v', 'libx264'])
+    command.extend(['-c:v', codec])
     command.extend(shlex.split(extra_params))
 
     command.append(output)
@@ -67,9 +67,9 @@ def safe_output(output):
 
     return output
 
-def mosaicify(inputs, width, height, output, ffmpeg_params):
+def mosaicify(inputs, width, height, output, codec, ffmpeg_params):
     output = safe_output(output)
-    command = build_ffmpeg(inputs, width, height, output, ffmpeg_params)
+    command = build_ffmpeg(inputs, width, height, output, codec, ffmpeg_params)
 
     try:
         subprocess.run(command, check=True)
@@ -89,6 +89,7 @@ if __name__ == '__main__':
     p.add_argument('-w', '--width', type=int, default=1920, help='output video width')
     p.add_argument('-h', '--height', type=int, default=1080, help='output video height')
     p.add_argument('-o', '--output', default='./movsaic.mp4', help='output file')
+    p.add_argument('-c', '--codec', default='libx264', help='output file video codec')
     p.add_argument('--ffmpeg-params', default='', help='extra params to pass to ffmpeg')
 
     mosaicify(**vars(p.parse_args()))
