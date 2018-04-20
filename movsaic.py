@@ -13,7 +13,7 @@ def build_filter(width, height, num_inputs):
     c_width = width // size
     c_height = height // size
 
-    base = [f'nullsrc=size={width}x{height} [{prev}]']
+    base = [f'color=color=black:size={width}x{height} [{prev}]']
     defs = []
     overlays = []
 
